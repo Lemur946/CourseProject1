@@ -7,10 +7,7 @@ from typing import List, Dict, Any, Hashable
 from read_operations_xlsx import read_transactions_from_excel, file_path_XLSX
 
 # Setting up a basic configuration for logger
-# Определите директорию логов
 logs_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'logs'))
-
-# Создайте директорию, если она не существует
 if not os.path.exists(logs_dir):
     os.makedirs(logs_dir)
 logger = logging.getLogger('services')
