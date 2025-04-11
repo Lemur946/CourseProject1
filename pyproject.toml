@@ -1,7 +1,7 @@
 [project]
 name = "courseproject1"
 version = "0.1.0"
-description = "An application for analyzing transactions that are in an Excel file."
+description = "Transaction Analysis Application"
 authors = [
     {name = "Artem Lemur Stytsko",email = "taifyn932802@gmail.com"}
 ]
