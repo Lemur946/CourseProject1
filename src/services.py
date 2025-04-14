@@ -3,7 +3,7 @@ import logging
 import math
 import os
 from datetime import datetime
-from typing import Any, Dict, Hashable, List
+from typing import Any
 
 # Setting up a basic configuration for logger
 logs_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "logs"))
@@ -17,7 +17,7 @@ file_handler.setFormatter(file_formatter)
 logger.addHandler(file_handler)
 
 
-def analyze_cashback_categories(data: List[Dict[Hashable, Any]], year: int, month: int) -> str:
+def analyze_cashback_categories(data: Any, year: int, month: int) -> str:
     """
     Analyzes the most profitable categories for cashback in a given month and year.
     """
