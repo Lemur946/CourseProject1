@@ -7,35 +7,37 @@ from src.read_operations_xlsx import read_transactions_from_excel
 
 
 def test_read_valid_excel() -> None:
-    """Тест с явным закрытием файла перед чтением"""
+    """Test with explicit file closing before reading"""
     try:
         with NamedTemporaryFile(suffix=".xlsx", delete=False) as tmp:
-            df = pd.DataFrame({
-                'Дата операции': ['2023-10-15'],
-                'Категория': ['Супермаркеты'],
-                'Сумма операции с округлением': [1000.0]
-            })
-            df.to_excel(tmp.name, index=False, engine='openpyxl')
+            df = pd.DataFrame(
+                {
+                    "Дата операции": ["2023-10-15"],
+                    "Категория": ["Супермаркеты"],
+                    "Сумма операции с округлением": [1000.0],
+                }
+            )
+            df.to_excel(tmp.name, index=False, engine="openpyxl")
 
-        # Читаем после закрытия файла
+        # Read after closing the file
         result = read_transactions_from_excel(tmp.name)
 
         assert len(result) == 1
-        assert result[0]['Категория'] == 'Супермаркеты'
+        assert result[0]["Категория"] == "Супермаркеты"
     finally:
-        os.unlink(tmp.name)  # Принудительное удаление
+        os.unlink(tmp.name)  # Forced deletion
 
 
 def test_read_empty_excel() -> None:
-    """Тест с гарантированным закрытием файла"""
+    """Test with guaranteed file closure"""
     import os
     from tempfile import NamedTemporaryFile
 
     try:
         with NamedTemporaryFile(suffix=".xlsx", delete=False, mode="w") as tmp:
-            tmp.close()  # Явное закрытие для Windows
+            tmp.close()  # Explicit close for Windows
             df = pd.DataFrame()
-            df.to_excel(tmp.name, engine='openpyxl')
+            df.to_excel(tmp.name, engine="openpyxl")
 
         result = read_transactions_from_excel(tmp.name)
         assert result == []

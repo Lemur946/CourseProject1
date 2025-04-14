@@ -1,7 +1,7 @@
 import json
 import logging
 import os
-from datetime import datetime, timedelta
+from datetime import datetime
 from typing import Any, Callable, Optional
 
 import pandas as pd
@@ -28,8 +28,11 @@ def report_to_file(filename: Optional[str] = None) -> Callable:
             print(f"Writing report to: {file_path}")
 
             # Write the result to a file
-            with open(file_path, "w", encoding="utf-8") as f:
-                json.dump(result, f, ensure_ascii=False, indent=4)
+            if isinstance(result, pd.DataFrame):
+                result.to_json(file_path, orient="records", lines=True, force_ascii=False, indent=4)
+            else:
+                with open(file_path, "w", encoding="utf-8") as f:
+                    json.dump(result, f, ensure_ascii=False, indent=4)
 
             return result
 
@@ -51,7 +54,7 @@ logger.addHandler(file_handler)
 
 
 @report_to_file()  # Using decorator without parameters
-def spending_by_category(transactions: pd.DataFrame, category: str, date: Optional[str] = None) -> dict:
+def spending_by_category(transactions: pd.DataFrame, category: str, date: Optional[str] = None) -> pd.DataFrame:
     """
     Return spending for the given category for the last three months from the provided date.
     """
@@ -65,26 +68,20 @@ def spending_by_category(transactions: pd.DataFrame, category: str, date: Option
     logger.info(f"Calculating spending for category '{category}' ending at {end_date.strftime('%Y-%m-%d')}")
 
     # Calculate the beginning of the period (three months ago)
-    start_date = end_date - timedelta(days=90)
+    start_date = end_date - pd.DateOffset(months=3)
 
     # Filter transactions by date and category
     mask = (
-            (transactions["Дата операции"] >= start_date)
-            & (transactions["Дата операции"] <= end_date)
-            & (transactions["Категория"] == category)
+        (transactions["Дата операции"] >= start_date)
+        & (transactions["Дата операции"] <= end_date)
+        & (transactions["Категория"] == category)
+        & (transactions["Сумма операции"] < 0)
     )
     filtered_transactions = transactions.loc[mask]
 
     # Summarize expenses by category
-    total_spending = filtered_transactions["Сумма операции с округлением"].sum()
-
-    # Preparing the result in JSON format
-    result = {
-        "category": category,
-        "total_spending": float(total_spending),
-        "period": {"start_date": start_date.strftime("%Y.%m.%d"), "end_date": end_date.strftime("%Y.%m.%d")},
-    }
+    total_spending = filtered_transactions["Сумма операции"].sum()
 
     logger.info(f"Total spending for category '{category}': {total_spending}")
 
-    return result
+    return filtered_transactions
