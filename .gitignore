@@ -1,4 +1,6 @@
-# Byte-compiled / optimized / DLL files
+feature/course_project
+
+# Byte-compiled / optimized / DLL fil
 __pycache__/
 *.py[cod]
 *$py.class
@@ -171,4 +173,6 @@ cython_debug/
 .ruff_cache/
 
 # PyPI configuration file
+feature/course_project
 .pypirc
+
